@@ -1,0 +1,38 @@
+{
+  "name": "agentbox",
+  "version": "0.1.0",
+  "description": "Run AI coding agents inside a strict filesystem sandbox",
+  "main": "dist/cli.js",
+  "bin": {
+    "agentbox": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "mkdir -p dist/sandbox/profiles && cp src/sandbox/profiles/*.sb.template dist/sandbox/profiles/",
+    "dev": "ts-node src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "rebuild-native": "npm rebuild node-pty"
+  },
+  "keywords": ["claude", "sandbox", "ai", "agent", "security"],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "diff": "^5.2.0",
+    "execa": "^9.3.0",
+    "node-pty": "^1.0.0",
+    "ora": "^8.1.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/diff": "^5.2.1",
+    "@types/node": "^20.14.0",
+    "@types/prompts": "^2.4.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

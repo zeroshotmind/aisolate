@@ -1,0 +1,18 @@
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Sandbox temp files
+agentbox-*.sb
+*.sandbox-backup
+
+# OS
+.DS_Store
+
+# Logs
+*.log

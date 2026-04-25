@@ -1,0 +1,93 @@
+; agentbox — macOS Seatbelt profile
+; Generated at runtime. WORKSPACE_PATH and HOME_PATH are interpolated.
+;
+; Only uses sandbox scheme operations that are valid on macOS 12+:
+;   process-exec, process-fork (NOT process-info-self / process-info-pidinfo)
+;   file-read*, file-write*, file-ioctl
+;   network-outbound, network-inbound
+;   mach-lookup, mach-register
+;   ipc-posix-shm, ipc-posix-sem
+;   sysctl-read
+(version 1)
+(deny default)
+
+; ── Process ────────────────────────────────────────────────────────────────
+(allow process-exec)
+(allow process-fork)
+
+; ── System reads (libraries, binaries, locale data) ────────────────────────
+(allow file-read*
+  (subpath "/usr")
+  (subpath "/bin")
+  (subpath "/sbin")
+  (subpath "/private/etc/resolv.conf")
+  (subpath "/private/etc/hosts")
+  (subpath "/private/etc/ssl")
+  (subpath "/private/etc/protocols")
+  (subpath "/private/etc/services")
+  (subpath "/private/etc/nsswitch.conf")
+  (subpath "/private/etc/localtime")
+  (subpath "/private/var/db/timezone")
+  (subpath "/private/var/db/dyld")
+  (subpath "/System/Library")
+  (subpath "/Library/Apple")
+  (subpath "/Library/Frameworks")
+  (subpath "/Library/Developer/CommandLineTools")
+  ; Rosetta / universal binaries
+  (subpath "/private/var/db/oah")
+  ; Locale
+  (subpath "/usr/share/locale")
+  (subpath "/usr/share/zoneinfo")
+  ; Device nodes
+  (literal "/dev/null")
+  (literal "/dev/zero")
+  (literal "/dev/random")
+  (literal "/dev/urandom")
+  (literal "/dev/dtracehelper")
+)
+
+; Allow PTY devices so interactive terminal works inside sandbox
+; /dev/tty      — controlling terminal (fd 0/1/2 when running under script(1))
+; /dev/ptmx     — PTY master multiplexer
+; /dev/pts/*    — Linux PTY slave devices
+; /dev/ttys*    — macOS PTY slave devices (e.g. /dev/ttys001)
+(allow file-read* file-write* file-ioctl
+  (literal "/dev/tty")
+  (literal "/dev/ptmx")
+  (subpath "/dev/pts")
+  (subpath "/dev/ttys")
+  (regex #"^/dev/ttys[0-9]+$")
+)
+
+; ── Sandbox workspace (read-write) ─────────────────────────────────────────
+(allow file-read* file-write*
+  (subpath "WORKSPACE_PATH")
+)
+
+; ── Fake HOME (read-write) ─────────────────────────────────────────────────
+(allow file-read* file-write*
+  (subpath "HOME_PATH")
+)
+
+; ── /tmp (npm, git, node needs this) ───────────────────────────────────────
+(allow file-read* file-write*
+  (subpath "/private/tmp")
+  (subpath "/private/var/folders")
+)
+
+; ── Mach IPC (required by dyld, libc, Foundation on macOS) ─────────────────
+(allow mach-lookup)
+(allow mach-register)
+
+; ── POSIX IPC ──────────────────────────────────────────────────────────────
+(allow ipc-posix-shm)
+(allow ipc-posix-sem)
+
+; ── sysctl (Node.js reads hw.ncpu, kern.osrelease, etc.) ───────────────────
+(allow sysctl-read)
+
+; ── Network ────────────────────────────────────────────────────────────────
+; Comment out / replace with (deny network*) when --no-network is passed.
+(allow network-outbound)
+(allow network-inbound (local ip))
+(allow network-inbound (local tcp))
