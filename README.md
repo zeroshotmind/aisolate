@@ -1,10 +1,10 @@
-# agentbox
+# aisolate
 
 Run AI coding agents inside a strict filesystem sandbox. The agent sees only your project folder — nothing else on your machine is visible or accessible.
 
 ```
 ╔══════════════════════════════════════════════╗
-║              agentbox  v0.1.0                ║
+║              aisolate  v0.1.0                ║
 ╚══════════════════════════════════════════════╝
 
   Project: /Users/you/my-project
@@ -15,36 +15,36 @@ Run AI coding agents inside a strict filesystem sandbox. The agent sees only you
 
 ## What it does
 
-When you run `agentbox run ./my-project`, the agent (Claude Code by default) is launched inside an isolated environment where:
+When you run `aisolate run ./my-project`, the agent (Claude Code by default) is launched inside an isolated environment where:
 
 - `/workspace` is your project — the agent can read and write here
 - `/root` is a minimal fake home with just enough config for auth to work
 - Everything else — `~/.ssh`, `~/.aws`, other repos, shell history, credentials — **does not exist** from the agent's perspective
 
-After the session ends, agentbox shows you a diff of every file the agent changed. You review and approve (or reject) each change before anything touches your real project.
+After the session ends, aisolate shows you a diff of every file the agent changed. You review and approve (or reject) each change before anything touches your real project.
 
 ## Quickstart
 
 ```bash
 # Install
-npm install -g agentbox
+npm install -g aisolate
 
 # Run Claude Code on a project
-agentbox run ./my-project
+aisolate run ./my-project
 
 # Force a specific backend
-agentbox run ./my-project --backend docker
-agentbox run ./my-project --backend bubblewrap   # Linux
-agentbox run ./my-project --backend sandbox-exec  # macOS fallback
+aisolate run ./my-project --backend docker
+aisolate run ./my-project --backend bubblewrap   # Linux
+aisolate run ./my-project --backend sandbox-exec  # macOS fallback
 
 # Pass a prompt directly to the agent
-agentbox run ./my-project -- "fix the failing tests"
+aisolate run ./my-project -- "fix the failing tests"
 
 # Disable network access inside the sandbox
-agentbox run ./my-project --no-network
+aisolate run ./my-project --no-network
 
 # Skip the approval step (apply all changes automatically)
-agentbox run ./my-project --no-approval
+aisolate run ./my-project --no-approval
 ```
 
 ## Requirements
@@ -58,12 +58,12 @@ agentbox run ./my-project --no-approval
 | `docker` | macOS + Linux | Full container filesystem | [Docker Desktop](https://www.docker.com/products/docker-desktop/) |
 | `sandbox-exec` | macOS | Syscall restriction only | Built into macOS |
 
-Run `agentbox info` to see which backends are available on your machine.
+Run `aisolate info` to see which backends are available on your machine.
 
 ## How it works
 
 ```
-agentbox run ./my-project
+aisolate run ./my-project
       │
       ▼
 1. Workspace setup
@@ -106,7 +106,7 @@ agentbox run ./my-project
       │
       ▼
 5. Diff extraction
-   After the session ends, agentbox compares the sandbox workspace
+   After the session ends, aisolate compares the sandbox workspace
    against the original project and collects all changes.
       │
       ▼
@@ -155,7 +155,7 @@ agentbox run ./my-project
 ## CLI reference
 
 ```
-agentbox run <folder> [options] [-- agent-args]
+aisolate run <folder> [options] [-- agent-args]
 
 Options:
   -a, --agent <name>     Agent to use: claude (default)
@@ -166,14 +166,14 @@ Options:
   --no-backup            Skip creating .sandbox-backup files before overwriting
   --verbose              Debug output
 
-agentbox info            Show available backends and workspace strategies
-agentbox agents          List available agent drivers
-agentbox clean <folder>  Remove .sandbox-backup files from a previous run
+aisolate info            Show available backends and workspace strategies
+aisolate agents          List available agent drivers
+aisolate clean <folder>  Remove .sandbox-backup files from a previous run
 ```
 
 ## Adding more agents
 
-agentbox is designed to support any CLI-based coding agent. Implement the `IAgent` interface in `src/agents/` and register it in `src/agents/registry.ts`:
+aisolate is designed to support any CLI-based coding agent. Implement the `IAgent` interface in `src/agents/` and register it in `src/agents/registry.ts`:
 
 ```typescript
 export interface IAgent {
@@ -189,8 +189,8 @@ Claude Code is the first supported agent. Codex, Aider, and others are planned.
 ## Development
 
 ```bash
-git clone https://github.com/zeroshotmind/agentbox
-cd agentbox
+git clone https://github.com/zeroshotmind/aisolate
+cd aisolate
 npm install
 npm run build
 
