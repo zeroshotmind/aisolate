@@ -1,5 +1,9 @@
 # aisolate
 
+[![npm version](https://img.shields.io/npm/v/aisolate)](https://www.npmjs.com/package/aisolate)
+[![npm downloads](https://img.shields.io/npm/dm/aisolate)](https://www.npmjs.com/package/aisolate)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Run AI coding agents inside a strict filesystem sandbox. The agent sees only your project folder — nothing else on your machine is visible or accessible.
 
 ```
